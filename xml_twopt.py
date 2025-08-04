@@ -83,8 +83,9 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
             model_averaging = False
             with open(path_fits,"r") as fit_file:
                 lines = fit_file.readlines()
+                fit_options = {}
                 for i,line in enumerate(lines):
-                    fit_options = {}
+                    
                     split = line.split("  ")
                     if split[0] == "-1":
                         model_avg_value = float(split[1].split()[0])
