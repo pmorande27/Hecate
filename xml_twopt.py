@@ -2,23 +2,25 @@ from pyparsing import line
 from utils import calc 
 import numpy as np
 import os
-def create_plot_xml(path_to_states,output_path,name_xml="prin_corr.xml"):
+def create_plot_xml(path_to_states,output_path,t0,name_xml="prin_corr.xml"):
     directories = os.listdir(path_to_states)
     with open(f"{output_path}/{name_xml}","w") as f:
         f.write("<prin_corrs>\n")
         for folder in directories:
             if "unord" in folder:
                 continue
+            num = folder.split("ord")[1]
+            name = f"prin_corrs_t0_{t0}_reorder_state{num}.xml"
             plot_path = f"{path_to_states}/{folder}/plot.ax"
-            f.write(f"   <plot {folder}>\n")
+            f.write(f"   <{name}>\n")
             if not os.path.exists(plot_path):
                 print(f"File {plot_path} does not exist, skipping plotting...")
                 continue
             with open(plot_path, 'r') as plot_file:
                 lines = plot_file.readlines()
                 for line in lines:
-                        f.write(line)
-            f.write(f"   </plot {folder}>\n")
+                    f.write(line)
+            f.write(f"   </{name}>\n")
         f.write("</prin_corrs>\n")
 def calculate_ZFactor_and_error_twopt(path_to_states,output_path,t0,name_xml="ZFactor.xml"):
     """
