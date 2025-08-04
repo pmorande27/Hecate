@@ -15,6 +15,7 @@ def load_plot_xml(path_xml,output_path):
                 
                 with open(f"{path_output_f}/{name}", 'w') as f:
                     while True:
+                        print(content[i])
                         i += 1
                         if '</plot prin_corrs' in content[i]:
                             break

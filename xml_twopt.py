@@ -12,10 +12,11 @@ def create_plot_xml(path_to_states,output_path,t0,name_xml="prin_corr.xml"):
             num = folder.split("ord")[1]
             name = f"prin_corrs_t0_{t0}_reorder_state{num}.ax"
             plot_path = f"{path_to_states}/{folder}/plot.ax"
-            f.write(f"   <plot {name}>\n")
+            
             if not os.path.exists(plot_path):
                 print(f"File {plot_path} does not exist, skipping plotting...")
                 continue
+            f.write(f"   <plot {name}>\n")
             with open(plot_path, 'r') as plot_file:
                 lines = plot_file.readlines()
                 for line in lines:
