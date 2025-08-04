@@ -10,7 +10,7 @@ def hecate_twopt():
     file_content = os.listdir("out")
     for item in file_content:
         if "t0" in item:
-            t0 = t0.split("t0_")[1]
+            t0 = item.split("t0_")[1]
             path_to_states = f"out/{item}/prin_corrs"
             output_path = f"out/xml"
             if not os.path.exists(output_path):
