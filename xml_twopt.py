@@ -142,19 +142,19 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
                 f.write(f"      <model_average_value>{model_avg_value}</model_average_value>\n")
                 f.write(f"      <model_average_error>{model_avg_err}</model_average_error>\n")
             if model_averaging:
-                f.write(f"<fit options>\n")
+                f.write(f"      <fit options>\n")
                 for name in fit_options.keys():
                     if name == "model_average":
                         continue
 
-                    f.write(f"   <option>\n")
-                    f.write(f"      <name>{name}</name>\n")
-                    f.write(f"      <value>{fit_options[name]['value']}</value>\n")
-                    f.write(f"      <error>{fit_options[name]['error']}</error>\n")
-                    f.write(f"      <chi_square>{fit_options[name]['chi_square']}</chi_square>\n")
-                    f.write(f"      <P>{fit_options[name]['P']}</P>\n")
-                    f.write(f"   </option>\n")
-                f.write(f"</fit options>\n")
+                    f.write(f"       <option>\n")
+                    f.write(f"           <name>{name}</name>\n")
+                    f.write(f"           <value>{fit_options[name]['value']}</value>\n")
+                    f.write(f"           <error>{fit_options[name]['error']}</error>\n")
+                    f.write(f"           <chi_square>{fit_options[name]['chi_square']}</chi_square>\n")
+                    f.write(f"           <P>{fit_options[name]['P']}</P>\n")
+                    f.write(f"      </option>\n")
+                f.write(f"      </fit options>\n")
             f.write(f"   </elem>\n")
         f.write("</energies>\n")
 
