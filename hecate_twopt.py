@@ -25,6 +25,6 @@ def hecate_twopt():
             name_plots = f"prin_corrs_t0_{t0}.xml"
             xml_twopt.calculate_ZFactor_and_error_twopt(path_to_statefactors, output_path, t0,name_xml=name_factors)
             xml_twopt.calculate_masses_and_error_twopt(path_to_states, output_path, t0,name_xml=name_energies)
-            xml_twopt.create_plot_xml(path_to_states, output_path_plots, name_xml=name_plots)
+            xml_twopt.create_plot_xml(path_to_states, output_path_plots,t0, name_xml=name_plots)
 if __name__ == "__main__":
     hecate_twopt()  
