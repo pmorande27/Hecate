@@ -15,10 +15,10 @@ def load_twopt_irrep_volume(path_xmls,path_irrep_volume,model_avg=False):
             path_output = f"{path_irrep_volume}/t0{t0}/ZValues"
             if not os.path.exists(path_output):
                 os.makedirs(path_output)
-            #load_xml.load_Z(f"{path_xmls}/{file}",path_output, model_avg=True)
+            load_xml.load_Z(f"{path_xmls}/{file}",path_output, model_avg=True)
             if not os.path.exists(f"{path_irrep_volume}/t0{t0}/ZvaluesRenormalized"):
                 os.makedirs(f"{path_irrep_volume}/t0{t0}/ZvaluesRenormalized")
-            #load_xml.normalize_Z(path_output,f"{path_irrep_volume}/t0{t0}/ZvaluesRenormalized")
+            load_xml.normalize_Z(path_output,f"{path_irrep_volume}/t0{t0}/ZvaluesRenormalized")
 if __name__ == "__main__":
     path_xmls = "./T1mM-testing/Volume_24/xml"
     path_irrep_volume = "./T1mM-testing/Volume_24"
