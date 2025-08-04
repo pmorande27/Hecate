@@ -10,7 +10,7 @@ def create_plot_xml(path_to_states,output_path,t0,name_xml="prin_corr.xml"):
             if "unord" in folder:
                 continue
             num = folder.split("ord")[1]
-            name = f"prin_corrs_t0_{t0}_reorder_state{num}.xml"
+            name = f"prin_corrs_t0_{t0}_reorder_state{num}.ax"
             plot_path = f"{path_to_states}/{folder}/plot.ax"
             f.write(f"   <{name}>\n")
             if not os.path.exists(plot_path):
