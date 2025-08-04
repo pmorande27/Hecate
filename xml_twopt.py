@@ -84,12 +84,41 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
             with open(path_fits,"r") as fit_file:
                 lines = fit_file.readlines()
                 for i,line in enumerate(lines):
+                    fit_options = {}
                     split = line.split("  ")
                     if split[0] == "-1":
                         model_avg_value = float(split[1].split()[0])
                         model_avg_err = float(split[1].split()[1])
                         model_averaging = True
+                        fit_options["model_average"] = (model_avg_value, model_avg_err)
+                    elif split[0].isnumeric() and split[0] != "0":
 
+                        value = float(split[1].split()[0])
+                        error = float(split[1].split()[1])
+                        name = line.split("|")[1].strip()
+                        chi_square = line.split("|")[2].strip()
+                        P = line.split("|")[3].strip()
+                        fit_options[name] = {
+                            "value": value,
+                            "error": error,
+                            "chi_square": chi_square,
+                            "P": P
+                        }
+                    elif split[0] == "0":
+                        value = float(split[1].split()[0])
+                        error = float(split[1].split()[1])
+                        name = "Chosen fit"
+                        chi_square = line.split("|")[2].strip()
+                        fit_options[name] = {
+                            "value": value,
+                            "error": error,
+                            "chi_square": chi_square,
+                            "P": "N/A"
+                        }
+
+
+
+                    
                     if i ==len(lines)-1:
                         print(f"Model average not found for {folder}, skipping...")
                 
@@ -111,6 +140,9 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
             if model_averaging:
                 f.write(f"      <model_average_value>{model_avg_value}</model_average_value>\n")
                 f.write(f"      <model_average_error>{model_avg_err}</model_average_error>\n")
+            if model_averaging:
+                f.write(f"<fit options>\n")
+                f.write(f"</fit options>\n")
             f.write(f"   </elem>\n")
         f.write("</energies>\n")
 
