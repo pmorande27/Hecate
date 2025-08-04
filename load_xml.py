@@ -1,6 +1,25 @@
 import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+def load_plot_xml(path_xml,output_path):
+    path_output_f = f"{output_path}"
+    if not os.path.exists(path_output_f):
+        os.makedirs(path_output_f)
+    print(f"Loading plot data from {path_xml} to {path_output_f}")
+
+    with open(f"{path_xml}", 'r') as file:
+        content = file.readlines()
+        for i, line in enumerate(content):
+            if '<plot prin_corrs' in line:
+                name = line.split("<")[1].split(">")[0]
+                
+                with open(f"{path_output_f}/{name}", 'w') as f:
+                    while True:
+                        i += 1
+                        if '</plot prin_corrs' in content[i]:
+                            break
+                        f.write(content[i])
+
 
 def load_mass_xml(path,path_output, model_avg=False):
     path_output_f = f"{path_output}"
