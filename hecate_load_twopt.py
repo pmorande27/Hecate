@@ -22,6 +22,6 @@ def load_twopt_irrep_volume(path_xmls,path_irrep_volume,model_avg=False):
 if __name__ == "__main__":
     path_xmls = "./T1mM-testing/Volume_24/xml"
     path_irrep_volume = "./T1mM-testing/Volume_24"
-    load_twopt_irrep_volume(path_xmls,path_irrep_volume,model_avg=True)
-            
+    #load_twopt_irrep_volume(path_xmls,path_irrep_volume,model_avg=True)
+    load_xml.create_fit_options_plot(f"{path_xmls}/energies_t0_11.xml", f"{path_irrep_volume}/t011/FitOptions",True)       
             

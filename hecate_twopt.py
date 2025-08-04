@@ -14,12 +14,17 @@ def hecate_twopt():
             t0 = item.split("t0_")[1]
             path_to_states = f"out/{item}/prin_corrs"
             output_path = f"out/xml"
+            output_path_plots = f"out/xml_plots"
             if not os.path.exists(output_path):
                 os.mkdir(output_path)
+            if not os.path.exists(output_path_plots):
+                os.mkdir(output_path_plots)
             path_to_statefactors = f"out/{item}/z"
             name_energies = f"energies_t0_{t0}.xml"
             name_factors = f"ZFactors_t0_{t0}.xml"
+            name_plots = f"prin_corrs_t0_{t0}.xml"
             xml_twopt.calculate_ZFactor_and_error_twopt(path_to_statefactors, output_path, t0,name_xml=name_factors)
             xml_twopt.calculate_masses_and_error_twopt(path_to_states, output_path, t0,name_xml=name_energies)
+            xml_twopt.create_plot_xml(path_to_states, output_path_plots, name_xml=name_plots)
 if __name__ == "__main__":
     hecate_twopt()  
