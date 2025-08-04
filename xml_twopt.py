@@ -146,13 +146,13 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
                     if name == "model_average":
                         continue
 
-                    f.write(f"   <elem>\n")
+                    f.write(f"   <option>\n")
                     f.write(f"      <name>{name}</name>\n")
                     f.write(f"      <value>{fit_options[name]['value']}</value>\n")
                     f.write(f"      <error>{fit_options[name]['error']}</error>\n")
                     f.write(f"      <chi_square>{fit_options[name]['chi_square']}</chi_square>\n")
                     f.write(f"      <P>{fit_options[name]['P']}</P>\n")
-                    f.write(f"   </elem>\n")
+                    f.write(f"   </option>\n")
                 f.write(f"</fit options>\n")
             f.write(f"   </elem>\n")
         f.write("</energies>\n")
