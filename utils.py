@@ -1,4 +1,5 @@
 
+import numpy as np
 def calc(file):
     """
     Function used to calculate the average and error of the data in a file

@@ -1,5 +1,6 @@
 import os
 import xml_twopt
+import numpy as np
 def hecate_twopt():
     """
     Function to run the hecate twopt information collection.
