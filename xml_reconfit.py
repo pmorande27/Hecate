@@ -31,7 +31,7 @@ def calculate_ZFactor_and_error_reconfit(path_to_states,output_path,t0,name_xml=
     :param name_xml: The name of the output xml file (default is ZFactor.xml)
     """
     path_to_factors = f"{path_to_states}/ZJackFiles"
-    directories = os.listdir(path_to_states)
+    directories = os.listdir(path_to_factors)
 
     with open(f"{output_path}/{name_xml}","w") as f:
         f.write("<ZFactors>\n")
