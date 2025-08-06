@@ -3,19 +3,20 @@ from utils import calc
 import numpy as np
 import os
 def create_plot_xml(path_to_states,output_path,t0,name_xml="prin_corr.xml"):
-    directories = os.listdir(path_to_states)
+    path_to_fits = f"{path_to_states}/PrinCorrPlots"
+    directories = os.listdir(path_to_fits)
     with open(f"{output_path}/{name_xml}","w") as f:
         f.write("<prin_corrs>\n")
-        for folder in directories:
-            if "unord" in folder:
+        for file in directories:
+            if not file.endswith(".ax"):
                 continue
-            num = folder.split("ord")[1]
-            name = f"prin_corrs_t0_{t0}_reorder_state{num}.ax"
-            plot_path = f"{path_to_states}/{folder}/plot.ax"
+
+            plot_path = f"{path_to_fits}/{file}"
             
             if not os.path.exists(plot_path):
                 print(f"File {plot_path} does not exist, skipping plotting...")
                 continue
+            name = file
             f.write(f"   <plot {name}>\n")
             with open(plot_path, 'r') as plot_file:
                 lines = plot_file.readlines()
