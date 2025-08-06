@@ -122,7 +122,7 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                     P = split[3].strip()
                     m = split[4].split(",")[0].strip()
                     print(m)
-                    value = m.split("m= ")[0].strip()
+                    value = m.split("m= ")[1].strip()
                     error = m.split("+/-")[1].strip()
                     fit_options[name] = {
                         "value": float(value),
