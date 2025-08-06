@@ -123,6 +123,8 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                         continue
                     split = line.split("|")
                     name = split[0].strip()
+                    if i == 2:
+                        name = "Chosen fit"
                     chisq = split[1].strip()
                     Q = split[2].strip()
                     P = split[3].strip()
@@ -150,9 +152,8 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
 
             
             f.write(f"      <fit options>\n")
-            for name in fit_options.keys():
-                if i == 2:
-                    name = "Chosen fit"
+            for i, name in enumerate(fit_options.keys()):
+                
                 f.write(f"       <option>\n")
                 f.write(f"           <name>{name}</name>\n")
                 f.write(f"           <value>{fit_options[name]['value']}</value>\n")
