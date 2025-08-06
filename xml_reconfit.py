@@ -104,7 +104,7 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                 continue
             state_num = file.split("state")[1].split(".")[0]
             t0 = file.split("t0_")[1].split("_")[0]
-            princcorrs = f"prin_corr_fit_log_t0{t0}_state{state_num}_reorder.log"
+            princcorrs = f"prin_corr_fit_log_t0{t0}_reorder_state{state_num}.log"
             path_fits = f"{path_vars}/{princcorrs}"
             with open(path_fits,"r") as fit_file:
                 lines = fit_file.readlines()
