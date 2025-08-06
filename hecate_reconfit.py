@@ -9,7 +9,7 @@ def hecate_reconfit():
     """
     file_content = os.listdir(".")
     for item in file_content:
-        if "t0" in item:
+        if "t0" in item and not "multi" in item:
 
             t0 = item.split("t0")[1]
             path_to_states = f"./{item}"
