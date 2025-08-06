@@ -114,7 +114,7 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                         continue
                     if i == 1:
                         continue
-                    
+                    print(line)
                     split = line.split("|")
                     name = split[0].strip()
                     chisq = split[1].strip()
