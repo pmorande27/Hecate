@@ -1,21 +1,26 @@
 import xml_reconfit
 import os
-def hecate_reconfit():
+import sys
+import shutil
+def hecate_reconfit(output,output_pathi,op_listpath):
     """
     Function to run the hecate twopt information collection.
     It will read the t0 values from the /. directory and call the
     calculate_masses_and_error_twopt and calculate_ZFactor_and_error_twopt functions
     to obtain all the information needed to create the xml files.
     """
-    file_content = os.listdir(".")
+    file_content = os.listdir(output)
+    shutil.copy(ops_list,f"{output_pathi}/ops.list")
+    if not os.path.exists(output_pathi):
+        os.mkdir(output_pathi)
     for item in file_content:
         if "t0" in item and not "multi" in item:
 
             t0 = item.split("t0")[1]
             path_to_states = f"./{item}"
-            output_path = f"./xml"
-            output_path_plots = f"./xml_plots"
-            output_path_pc = "./pc_xml"
+            output_path = f"{output_pathi}/xml"
+            output_path_plots = f"{output_pathi}/xml_plots"
+            output_path_pc = f"{output_pathi}/pc_xml"
             if not os.path.exists(output_path):
                 os.mkdir(output_path)
             if not os.path.exists(output_path_plots):
@@ -34,4 +39,22 @@ def hecate_reconfit():
             xml_reconfit.create_pc_xml(path_to_states, output_path_pc,t0, name_xml=name_pc)
 
 if __name__ == "__main__":
-    hecate_reconfit()  
+    if len(sys.argv)== 4:
+        output = sys.argv[2]
+        output_path = sys.argv[3]
+        ops_list = sys.argv[1]
+    elif len(sys.argv)== 3:
+        ops_list = sys.argv[1]
+        output = sys.argv[2]
+        output_path = output
+    elif len(sys.argv) == 2:
+        ops_list = sys.argv[1]
+
+        output = "out"
+        output_path = "out"
+    else:
+        ops_list = "ops.list"
+        output = "out"
+        output_path = "out"
+
+    hecate_reconfit(output=output,output_pathi=output_path,op_listpath=ops_list)  
