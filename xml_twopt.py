@@ -2,6 +2,28 @@ from pyparsing import line
 from utils import calc 
 import numpy as np
 import os
+
+def create_pc_xml(path_to_states,output_path,t0,name_xml="pc.xml"):
+    directories = os.listdir(path_to_states)
+    with open(f"{output_path}/{name_xml}","w") as f:
+        f.write("<prin_corrs data>\n")
+        for folder in directories:
+            if "unord" in folder:
+                continue
+            num = folder.split("ord")[1]
+            name = f"prin_corrs_t0_{t0}_reorder_state{num}.jack"
+            plot_path = f"{path_to_states}/{folder}/pc.jack"
+            
+            if not os.path.exists(plot_path):
+                print(f"File {plot_path} does not exist, skipping pc collection...")
+                continue
+            f.write(f"   <pc {name}>\n")
+            with open(plot_path, 'r') as plot_file:
+                lines = plot_file.readlines()
+                for line in lines:
+                    f.write(line)
+            f.write(f"   </pc {name}>\n")
+        f.write("</prin_corrs data>\n")
 def create_plot_xml(path_to_states,output_path,t0,name_xml="prin_corr.xml"):
     directories = os.listdir(path_to_states)
     with open(f"{output_path}/{name_xml}","w") as f:
@@ -42,7 +64,7 @@ def calculate_ZFactor_and_error_twopt(path_to_states,output_path,t0,name_xml="ZF
                 if "op" not in op_folder:
                     continue
                 
-                path_zfactor = f"{path_to_states}/{folder}/{op_folder}/C.jack"
+                path_zfactor = f"{path_to_states}/{folder}/{op_folder}/Z.jack"
                 model_averaging = False
                 model_avg_path = f"{path_to_states}/{folder}/{op_folder}/C.vars"
 
@@ -72,8 +94,8 @@ def calculate_ZFactor_and_error_twopt(path_to_states,output_path,t0,name_xml="ZF
                 f.write(f"      <value>{avg}</value>\n")
                 f.write(f"      <error>{err}</error>\n")
                 if model_averaging:
-                    f.write(f"      <model_average_value>{abs(model_avg_value)}</model_average_value>\n")
-                    f.write(f"      <model_average_error>{model_avg_err}</model_average_error>\n")
+                    f.write(f"      <model_average_value_z>{abs(model_avg_value)}</model_average_value_z>\n")
+                    f.write(f"      <model_average_error_z>{model_avg_err}</model_average_error_z>\n")
                 f.write(f"   </elem>\n")
         f.write("</ZFactors>\n")
 
@@ -101,51 +123,143 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
                 print(f"File {path_energy} does not exist, skipping...")
                 continue
             path_fits = f"{path_to_states}/{folder}/m.vars"
+            path_A = f"{path_to_states}/{folder}/A.vars"
+            path_dm = f"{path_to_states}/{folder}/dm.vars"
+            if os.path.exists(path_A):
+                A_variation = True
+            else:
+                A_variation = False
+                path_A = path_fits
+            if os.path.exists(path_dm):
+                dm_variation = True
+
+            else:
+                dm_variation = False
+                path_dm = path_fits
+
             model_averaging = False
             with open(path_fits,"r") as fit_file:
-                lines = fit_file.readlines()
-                fit_options = {}
-                for i,line in enumerate(lines):
+                with open(path_A,"r") as A_file:
+                        with open(path_dm,"r") as dm_file:
+
+                            lines = fit_file.readlines()
+                            lines_A = A_file.readlines()
+                            lines_dm = dm_file.readlines()
+                            fit_options = {}
+                            j = 0
+                            for i,line in enumerate(lines):
+                                split = line.split("  ")
+                                split_A = lines_A[j].split("  ")
+                                split_dm = lines_dm[j].split("  ")
+                                if split[0] == "-1":
+                                    model_avg_value = float(split[1].split()[0])
+                                    model_avg_err = float(split[1].split()[1])
+                                    model_averaging = True
+                                    if dm_variation:
+                                        model_avg_value_dm = float(split_dm[1].split()[0])
+                                        model_avg_err_dm = float(split_dm[1].split()[1])
+                                    if A_variation:
+                                        model_avg_value_A = float(split_A[1].split()[0])
+                                        model_avg_err_A = float(split_A[1].split()[1])
+                                    if A_variation and dm_variation:
+                                        fit_options["model_average"] = (model_avg_value, model_avg_err,model_avg_value_A,model_avg_err_A,model_avg_value_dm,model_avg_err_dm)
+                                    else:
+                                        fit_options["model_average"] = (model_avg_value, model_avg_err)
+
+                                elif split[0].isnumeric() and split[0] != "0":
+
+                                    value = float(split[1].split()[0])
+                                    error = float(split[1].split()[1])
+
+                                    name = line.split("|")[1].strip()
+                                    if "1exp" not in name and A_variation and dm_variation:
+                                        
+                                        value_dm = float(split_dm[1].split()[0])
+                                        err_dm = float(split_dm[1].split()[1])
+                                        value_A = float(split_A[1].split()[0])
+                                        err_A = float(split_A[1].split()[1])
+                                        try:
+
+                                            P_A = lines_A[j].split("|")[3].strip()
+                                            P_dm = lines_dm[j].split("|")[3].strip()
+                                        except:
+                                            P_A = ""
+                                            P_dm = ""
+                                    else:
+                                        value_dm = "-"
+                                        err_dm = "-"
+                                        value_A = "-"
+                                        err_A = "-"
+                                        P_dm = "-"
+                                        P_A = "-"
+                                    if "1exp" in name and A_variation and dm_variation:
+                                        j-=1
+                                    chi_square = line.split("|")[2].strip()
+                                    try:
+                                        P = line.split("|")[3].strip()
+                                    except:
+                                        P = "-"
+                                    fit_options[name] = {
+                                        "value": value,
+                                        "error": error,
+                                        "chi_square": chi_square,
+                                        "P": P,
+                                        "dm":value_dm,
+                                        "err_dm":err_dm,
+                                        "P_dm":P_dm,
+                                        "A":value_A,
+                                        "err_A":err_A,
+                                        "P_A":P_A
+
+                                    }
+                                elif split[0] == "0":
+                                    value = float(split[1].split()[0])
+                                    error = float(split[1].split()[1])
+                                    name = line.split("|")[1].strip()
+                                    print(split_dm)
+                                    if "1exp" not in name and A_variation and dm_variation:
+                                        
+                                        value_dm = float(split_dm[1].split()[0])
+                                        err_dm = float(split_dm[1].split()[1])
+                                        value_A = float(split_A[1].split()[0])
+                                        err_A = float(split_A[1].split()[1])
+                                        P_dm = "N/A"
+                                        P_A = "N/A"
+                                    else:
+                                        value_dm = "-"
+                                        err_dm = "-"
+                                        value_A = "-"
+                                        err_A = "-"
+                                        P_dm = "-"
+                                        P_A = "-"
+                                    if "1exp" in name and A_variation and dm_variation:
+                                        j-=1
+ 
+                                    name = "Chosen fit"
+                                    chi_square = line.split("|")[2].strip()
+                                    fit_options[name] = {
+                                        "value": value,
+                                        "error": error,
+                                        "chi_square": chi_square,
+                                        "P": "N/A",
+                                        "dm":value_dm,
+                                        "err_dm":err_dm,
+                                        "P_dm":P_dm,
+                                        "A":value_A,
+                                        "err_A":err_A,
+                                        "P_A":P_A
+
+                                    }
+
+
+
+                                
+                                if i ==len(lines)-1:
+                                    print(f"Model average not found for {folder}, skipping...")
+                                j += 1
                     
-                    split = line.split("  ")
-                    if split[0] == "-1":
-                        model_avg_value = float(split[1].split()[0])
-                        model_avg_err = float(split[1].split()[1])
-                        model_averaging = True
-                        fit_options["model_average"] = (model_avg_value, model_avg_err)
-                    elif split[0].isnumeric() and split[0] != "0":
-
-                        value = float(split[1].split()[0])
-                        error = float(split[1].split()[1])
-                        name = line.split("|")[1].strip()
-                        chi_square = line.split("|")[2].strip()
-                        P = line.split("|")[3].strip()
-                        fit_options[name] = {
-                            "value": value,
-                            "error": error,
-                            "chi_square": chi_square,
-                            "P": P
-                        }
-                    elif split[0] == "0":
-                        value = float(split[1].split()[0])
-                        error = float(split[1].split()[1])
-                        name = "Chosen fit"
-                        chi_square = line.split("|")[2].strip()
-                        fit_options[name] = {
-                            "value": value,
-                            "error": error,
-                            "chi_square": chi_square,
-                            "P": "N/A"
-                        }
-
-
-
                     
-                    if i ==len(lines)-1:
-                        print(f"Model average not found for {folder}, skipping...")
-                
-                
-                
+                    
                     
             
             num = ""
@@ -162,7 +276,15 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
             if model_averaging:
                 f.write(f"      <model_average_value>{model_avg_value}</model_average_value>\n")
                 f.write(f"      <model_average_error>{model_avg_err}</model_average_error>\n")
-            if model_averaging:
+                if len(fit_options["model_average"])>2:
+                    model_averaging,model_avg_err,model_avg_value_A,model_avg_err_A,model_avg_value_dm,model_avg_err_dm = fit_options["model_average"]                
+                    f.write(f"      <model_average_value_A>{model_avg_value_A}</model_average_value_A>\n")
+                    f.write(f"      <model_average_error_A>{model_avg_err_A}</model_average_error_A>\n")
+                    f.write(f"      <model_average_value_dm>{model_avg_value_dm}</model_average_value_dm>\n")
+                    f.write(f"      <model_average_error_dm>{model_avg_err_dm}</model_average_error_dm>\n")
+
+
+            if True:
                 f.write(f"      <fit options>\n")
                 for name in fit_options.keys():
                     if name == "model_average":
@@ -174,6 +296,15 @@ def calculate_masses_and_error_twopt(path_to_states,output_path,t0,name_xml="ene
                     f.write(f"           <error>{fit_options[name]['error']}</error>\n")
                     f.write(f"           <chi_square>{fit_options[name]['chi_square']}</chi_square>\n")
                     f.write(f"           <P>{fit_options[name]['P']}</P>\n")
+                    f.write(f"           <A>{fit_options[name]['A']}</A>\n")
+                    f.write(f"           <A_err>{fit_options[name]['err_A']}</A_err>\n")
+                    f.write(f"           <P_A>{fit_options[name]['P_A']}</P_A>\n")
+                    f.write(f"           <dm>{fit_options[name]['dm']}</dm>\n")
+                    f.write(f"           <dm_err>{fit_options[name]['err_dm']}</dm_err>\n")
+                    f.write(f"           <P_dm>{fit_options[name]['P_dm']}</P_dm>\n")
+
+
+
                     f.write(f"      </option>\n")
                 f.write(f"      </fit options>\n")
             f.write(f"   </elem>\n")

@@ -2,6 +2,28 @@ from pyparsing import line
 from utils import calc 
 import numpy as np
 import os
+def create_pc_xml(path_to_states,output_path,t0,name_xml="pc.xml"):
+    path_to_fits = f"{path_to_states}/PrinCorrFiles"
+    directories = os.listdir(path_to_fits)
+    with open(f"{output_path}/{name_xml}","w") as f:
+        f.write("<prin_corrs data>\n")
+        for file in directories:
+            if not file.endswith(".jack"):
+                continue
+
+            plot_path = f"{path_to_fits}/{file}"
+            
+            if not os.path.exists(plot_path):
+                print(f"File {plot_path} does not exist, skipping pc...")
+                continue
+            name = file
+            f.write(f"   <pc {name}>\n")
+            with open(plot_path, 'r') as plot_file:
+                lines = plot_file.readlines()
+                for line in lines:
+                    f.write(line)
+            f.write(f"   </pc {name}>\n")
+        f.write("</prin_corrs data>\n")
 def create_plot_xml(path_to_states,output_path,t0,name_xml="prin_corr.xml"):
     path_to_fits = f"{path_to_states}/PrinCorrPlots"
     directories = os.listdir(path_to_fits)
@@ -100,6 +122,9 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                         continue
                     split = line.split("|")
                     name = split[0].strip()
+                    extraParams = False
+                    if "twoExp" in name:
+                        extraParams = True
                     if i == 2:
                         name = "Chosen fit"
                     chisq = split[1].strip()
@@ -108,12 +133,29 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                     m = split[4].split(",")[0].strip()
                     value = m.split("m= ")[1].strip().split("+/-")[0].strip()
                     error = m.split("+/-")[1].strip()
-                    fit_options[name] = {
+                    if extraParams:
+                        parameters = split[4].split(",")
+                        mp = parameters[1]
+                        A = parameters[2]
+                        mp_value = mp.split("m'=")[1].strip().split("+/-")[0].strip()
+                        mp_error = mp.split("+/-")[1].strip()
+                        A_value = A.split("A=")[1].strip().split("+/-")[0].strip()
+                        A_error = A.split("+/-")[1].strip()
+                        fit_options[name] = {
+                            "value": float(value),
+                            "error": float(error),
+                            "chi_square": chisq,
+                            "P": P,
+                            "Extra Parameters": [mp_value,mp_error,A_value,A_error]
+                        }
+                    else:
+                        fit_options[name] = {
                         "value": float(value),
                         "error": float(error),
                         "chi_square": chisq,
-                        "P": P
-                    }
+                        "P": P,
+                        "Extra Parameters": []
+                        }
 
                 
                     
@@ -137,6 +179,14 @@ def calculate_masses_and_error_reconfit(path_to_states,output_path,t0,name_xml="
                 f.write(f"           <error>{fit_options[name]['error']}</error>\n")
                 f.write(f"           <chi_square>{fit_options[name]['chi_square']}</chi_square>\n")
                 f.write(f"           <P>{fit_options[name]['P']}</P>\n")
+                if fit_options[name]["Extra Parameters"] != []:
+                    pass
+                    #print(fit_options[name]["Extra Parameters"])
+                    extraParams = fit_options[name]["Extra Parameters"] 
+                    f.write(f"           <m' value>{extraParams[0]}</m' value>\n")
+                    f.write(f"           <m' error>{extraParams[1]}</m' error>\n")
+                    f.write(f"           <A value>{extraParams[2]}</A value>\n")
+                    f.write(f"           <A error>{extraParams[3]}</A error>\n")
                 f.write(f"      </option>\n")
             f.write(f"      </fit options>\n")
             f.write(f"   </elem>\n")

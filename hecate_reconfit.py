@@ -15,16 +15,23 @@ def hecate_reconfit():
             path_to_states = f"./{item}"
             output_path = f"./xml"
             output_path_plots = f"./xml_plots"
+            output_path_pc = "./pc_xml"
             if not os.path.exists(output_path):
                 os.mkdir(output_path)
             if not os.path.exists(output_path_plots):
                 os.mkdir(output_path_plots)
+            if not os.path.exists(output_path_pc):
+                os.mkdir(output_path_pc)
             name_energies = f"energies_t0_{t0}.xml"
             name_factors = f"ZFactors_t0_{t0}.xml"
             name_plots = f"prin_corrs_t0_{t0}.xml"
+            name_pc = f"pc_t0_{t0}.xml"
             print(f"Processing t0: {t0}")
             xml_reconfit.calculate_ZFactor_and_error_reconfit(path_to_states, output_path, t0,name_xml=name_factors)
             xml_reconfit.calculate_masses_and_error_reconfit(path_to_states, output_path, t0,name_xml=name_energies)
             xml_reconfit.create_plot_xml(path_to_states, output_path_plots,t0, name_xml=name_plots)
+                        
+            xml_reconfit.create_pc_xml(path_to_states, output_path_pc,t0, name_xml=name_pc)
+
 if __name__ == "__main__":
     hecate_reconfit()  
