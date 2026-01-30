@@ -10,9 +10,10 @@ def hecate_reconfit(output,output_pathi,op_listpath):
     to obtain all the information needed to create the xml files.
     """
     file_content = os.listdir(output)
-    shutil.copy(ops_list,f"{output_pathi}/ops.list")
     if not os.path.exists(output_pathi):
         os.mkdir(output_pathi)
+    shutil.copy(ops_list,f"{output_pathi}/ops.list")
+
     for item in file_content:
         if "t0" in item and not "multi" in item:
 
