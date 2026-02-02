@@ -15,7 +15,7 @@ def hecate_reconfit(output,output_pathi,op_listpath):
         os.mkdir(output_pathi)
     shutil.copy(ops_list,f"{output_pathi}/ops.list")
 
-    for item in file_content:
+    for i,item in enumerate(file_content):
         if "t0" in item and not "multi" in item:
 
             t0 = item.split("t0")[1]
@@ -39,8 +39,12 @@ def hecate_reconfit(output,output_pathi,op_listpath):
             xml_reconfit.create_plot_xml(path_to_states, output_path_plots,t0, name_xml=name_plots)
                         
             xml_reconfit.create_pc_xml(path_to_states, output_path_pc,t0, name_xml=name_pc)
+            
             print(f"moving {item} to {path_final}")
-            shutil.move(f"{output}/t0{t0}", path_final)
+            if i ==0:
+                shutil.move(f"{output}/t0{t0}", f"{path_final}/t0{t0}")
+            else:
+                shutil.move(f"{output}/t0{t0}",path_final)
 
 if __name__ == "__main__":
     if len(sys.argv)== 4:
