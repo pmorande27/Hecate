@@ -14,6 +14,8 @@ def hecate_reconfit(output,output_pathi,op_listpath):
     if not os.path.exists(output_pathi):
         os.mkdir(output_pathi)
     shutil.copy(ops_list,f"{output_pathi}/ops.list")
+    shutil.copy(ops_list,f"{path_final}/ops.list")
+
 
     for i,item in enumerate(file_content):
         if "t0" in item and not "multi" in item:
