@@ -40,7 +40,7 @@ def hecate_reconfit(output,output_pathi,op_listpath):
                         
             xml_reconfit.create_pc_xml(path_to_states, output_path_pc,t0, name_xml=name_pc)
             print(f"moving {item} to {path_final}")
-            shutil.move(f"{output}/{item}", path_final)
+            shutil.move(f"{output}/t0{t0}", path_final)
 
 if __name__ == "__main__":
     if len(sys.argv)== 4:
