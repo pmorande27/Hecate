@@ -9,6 +9,7 @@ def hecate_reconfit(output,output_pathi,op_listpath):
     calculate_masses_and_error_twopt and calculate_ZFactor_and_error_twopt functions
     to obtain all the information needed to create the xml files.
     """
+    path_final = f"{output}/reconfit"
     file_content = os.listdir(output)
     if not os.path.exists(output_pathi):
         os.mkdir(output_pathi)
@@ -38,6 +39,7 @@ def hecate_reconfit(output,output_pathi,op_listpath):
             xml_reconfit.create_plot_xml(path_to_states, output_path_plots,t0, name_xml=name_plots)
                         
             xml_reconfit.create_pc_xml(path_to_states, output_path_pc,t0, name_xml=name_pc)
+            shutil.move(f"{output}/{item}", path_final)
 
 if __name__ == "__main__":
     if len(sys.argv)== 4:

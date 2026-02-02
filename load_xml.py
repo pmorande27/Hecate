@@ -172,25 +172,30 @@ def load_fit_options(path_xml, output_path, model_avg=False):
                 value = float(value_line.split('<value>')[1].split('</value>')[0])
                 error = float(error_line.split('<error>')[1].split('</error>')[0])
                 if i != len(content)-1:
-                    model_avg_value_line = content[i + 4]
-                    model_avg_error_line = content[i + 5]
-                    model_avg_value_A_line = content[i + 6]
-                    model_avg_error_A_line = content[i + 7]
-                    model_avg_value_dm_line = content[i + 8]
-                    model_avg_error_dm_line = content[i + 9]
-                    if '<model_average_value>' in model_avg_value_line and '<model_average_error>' in model_avg_error_line and model_avg:
-                        value = float(model_avg_value_line.split('<model_average_value>')[1].split('</model_average_value>')[0])
-                        error = float(model_avg_error_line.split('<model_average_error>')[1].split('</model_average_error>')[0])
-                        if '<model_average_value_A>' in model_avg_value_A_line and '<model_average_error_A>' in model_avg_error_A_line:
-                            A_value = float(model_avg_value_A_line.split('<model_average_value_A>')[1].split('</model_average_value_A>')[0])
-                            A_error = float(model_avg_error_A_line.split('<model_average_error_A>')[1].split('</model_average_error_A>')[0])
-                            dm_value = float(model_avg_value_dm_line.split('<model_average_value_dm>')[1].split('</model_average_value_dm>')[0])
-                            dm_error = float(model_avg_error_dm_line.split('<model_average_error_dm>')[1].split('</model_average_error_dm>')[0])
-                            fit_options[name] = [("model_average", value, error, "N/A", "N/A", "blue", 0,[A_value, A_error, dm_value, dm_error,"N/A", "N/A"])]
-                        else:
-                            fit_options[name] = [("model_average", value, error, "N/A", "N/A", "blue", 0,[])]
-                in_fit_options = False
- 
+                    try:
+                        model_avg_value_line = content[i + 4]
+                        model_avg_error_line = content[i + 5]
+                        model_avg_value_A_line = content[i + 6]
+                        model_avg_error_A_line = content[i + 7]
+                        model_avg_value_dm_line = content[i + 8]
+                        model_avg_error_dm_line = content[i + 9]
+                        if '<model_average_value>' in model_avg_value_line and '<model_average_error>' in model_avg_error_line and model_avg:
+                            value = float(model_avg_value_line.split('<model_average_value>')[1].split('</model_average_value>')[0])
+                            error = float(model_avg_error_line.split('<model_average_error>')[1].split('</model_average_error>')[0])
+                            if '<model_average_value_A>' in model_avg_value_A_line and '<model_average_error_A>' in model_avg_error_A_line:
+                                A_value = float(model_avg_value_A_line.split('<model_average_value_A>')[1].split('</model_average_value_A>')[0])
+                                A_error = float(model_avg_error_A_line.split('<model_average_error_A>')[1].split('</model_average_error_A>')[0])
+                                dm_value = float(model_avg_value_dm_line.split('<model_average_value_dm>')[1].split('</model_average_value_dm>')[0])
+                                dm_error = float(model_avg_error_dm_line.split('<model_average_error_dm>')[1].split('</model_average_error_dm>')[0])
+                                fit_options[name] = [("model_average", value, error, "N/A", "N/A", "blue", 0,[A_value, A_error, dm_value, dm_error,"N/A", "N/A"])]
+                            else:
+                                fit_options[name] = [("model_average", value, error, "N/A", "N/A", "blue", 0,[])]
+                    except Exception as e:
+                        pass
+
+                    in_fit_options = False
+            
+    
                 l = 2
                 for j, line_w in enumerate(content[i + 3:]):
                         if "<fit options>" in line_w:

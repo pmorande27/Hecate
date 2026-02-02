@@ -45,7 +45,7 @@ def pc_analysis():
 
 def main():
     volumes = [48]
-    irrep = "../charmonium_865/p000-EmP-2src"
+    irrep = "../charmonium_865/p000-T1pP-3src"
 
 
     for i in volumes:
